@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji文字RPG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>😎 Emoji文字RPG 🐉</h1>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div>生命 ❤️</div>
+                <div class="stat-value" id="hp">100/100</div>
+            </div>
+            <div class="stat-item">
+                <div>等级 ⭐</div>
+                <div class="stat-value" id="level">1</div>
+            </div>
+            <div class="stat-item">
+                <div>金币 💰</div>
+                <div class="stat-value" id="gold">10</div>
+            </div>
+            <div class="stat-item">
+                <div>攻击 ⚔️</div>
+                <div class="stat-value" id="attack">10</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="game-text" id="game-text">欢迎来到Emoji地牢！点击下方按钮开始冒险。</div>
+            <div class="emoji-large" id="emoji-display">🏰</div>
+        </div>
+
+        <div class="actions" id="actions">
+            <!-- 按钮将通过JS动态生成 -->
+        </div>
+
+        <div class="log">
+            <div id="log-content">
+                <div class="log-item">游戏开始！你站在地牢入口。</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
