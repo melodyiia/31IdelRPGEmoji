@@ -12,7 +12,7 @@ const gameState = {
     gameActive: true
 };
 
-// 游戏内容（只保留locations）
+// 游戏内容
 const gameContent = {
     locations: {
         town: {
@@ -268,7 +268,7 @@ function attackEnemy() {
     updateAllDisplays();
 }
 
-// 敌人攻击 - 修改这里！
+// 敌人攻击
 function enemyAttack() {
     if (!gameState.enemy) return;
 
@@ -276,30 +276,23 @@ function enemyAttack() {
     gameState.hp -= enemyDamage;
     addLog(`${gameState.enemy.name}对你造成了${enemyDamage}点伤害！`);
 
-    // 检查玩家是否死亡
     if (gameState.hp <= 0) {
-        // 玩家被击败，但不结束游戏
         gameState.hp = 0;
         addLog("你被击败了！");
 
-        // 扣一半金币（最少保留1金币）
         const lostGold = Math.floor(gameState.gold / 2);
         gameState.gold = Math.max(1, gameState.gold - lostGold);
         addLog(`你失去了${lostGold}枚金币！`);
 
-        // 满血复活
         gameState.hp = gameState.maxHp;
         addLog("你在村庄满血复活了！");
 
-        // 返回村庄
         gameState.location = 'town';
         gameState.enemy = null;
 
-        // 更新游戏显示
         gameTextEl.textContent = "你被击败后回到了村庄，金币损失了一半。";
         emojiDisplayEl.textContent = "🏘️";
     } else {
-        // 更新敌人状态显示
         gameTextEl.textContent = `${gameState.enemy.name} (HP: ${gameState.enemy.hp})`;
     }
 
@@ -327,24 +320,74 @@ function updateNextEnemyPrediction() {
     document.getElementById('next-enemy').textContent = enemies[nextEnemyIndex].name;
 }
 
-// 控制函数
+// === 存档系统 ===
+
+// 快速保存到localStorage
 function quickSave() {
     localStorage.setItem('emojiRPG_save', JSON.stringify(gameState));
-    addLog("游戏已保存！");
+    addLog("游戏已保存到浏览器存储！");
 }
 
+// 快速读取从localStorage
 function quickLoad() {
     const saveData = localStorage.getItem('emojiRPG_save');
     if (saveData) {
-        Object.assign(gameState, JSON.parse(saveData));
-        addLog("游戏已读取！");
+        const savedState = JSON.parse(saveData);
+        Object.assign(gameState, savedState);
+        addLog("已从浏览器存储读取存档！");
         updateAllDisplays();
         updateDisplay();
     } else {
-        addLog("没有找到保存数据！");
+        addLog("没有找到存档数据！");
     }
 }
 
+// 导出存档为文件
+function exportSave() {
+    const saveData = JSON.stringify(gameState, null, 2);
+    const blob = new Blob([saveData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `emoji-rpg-save-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    addLog("存档已导出为文件！");
+}
+
+// 导入存档文件
+function importSave() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+
+    input.onchange = function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const saveData = JSON.parse(e.target.result);
+                Object.assign(gameState, saveData);
+                addLog("存档文件已导入！");
+                updateAllDisplays();
+                updateDisplay();
+            } catch (error) {
+                addLog("导入失败：文件格式错误！");
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    input.click();
+}
+
+// 重置游戏
 function resetGame() {
     if (confirm("确定要重置游戏吗？")) {
         Object.assign(gameState, {
