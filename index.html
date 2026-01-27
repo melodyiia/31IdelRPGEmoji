@@ -9,41 +9,105 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>😎 Emoji文字RPG 🐉</h1>
-
-        <div class="stats">
-            <div class="stat-item">
-                <div>生命 ❤️</div>
-                <div class="stat-value" id="hp">100/100</div>
-            </div>
-            <div class="stat-item">
-                <div>等级 ⭐</div>
-                <div class="stat-value" id="level">1</div>
-            </div>
-            <div class="stat-item">
-                <div>金币 💰</div>
-                <div class="stat-value" id="gold">10</div>
-            </div>
-            <div class="stat-item">
-                <div>攻击 ⚔️</div>
-                <div class="stat-value" id="attack">10</div>
+    <div class="game-container">
+        <!-- 左上区域 -->
+        <div class="area top-left">
+            <div class="stats">
+                <div class="stat-item">
+                    <div>生命 ❤️</div>
+                    <div class="stat-value" id="hp">100/100</div>
+                </div>
+                <div class="stat-item">
+                    <div>等级 ⭐</div>
+                    <div class="stat-value" id="level">1</div>
+                </div>
+                <div class="stat-item">
+                    <div>金币 💰</div>
+                    <div class="stat-value" id="gold">10</div>
+                </div>
+                <div class="stat-item">
+                    <div>攻击 ⚔️</div>
+                    <div class="stat-value" id="attack">10</div>
+                </div>
             </div>
         </div>
 
-        <div class="game-area">
-            <div class="game-text" id="game-text">欢迎来到Emoji地牢！点击下方按钮开始冒险。</div>
-            <div class="emoji-large" id="emoji-display">🏰</div>
-        </div>
-
-        <div class="actions" id="actions">
-            <!-- 按钮将通过JS动态生成 -->
-        </div>
-
-        <div class="log">
-            <div id="log-content">
-                <div class="log-item">游戏开始！你站在地牢入口。</div>
+        <!-- 左中上区域 -->
+        <div class="area top-left-middle">
+            <div class="game-area">
+                <div class="game-text" id="game-text">欢迎来到Emoji地牢！点击下方按钮开始冒险。</div>
+                <div class="emoji-large" id="emoji-display">🏰</div>
             </div>
+        </div>
+
+        <!-- 左中下区域 -->
+        <div class="area bottom-left-middle">
+            <div class="actions" id="actions">
+                <!-- 按钮将通过JS动态生成 -->
+            </div>
+        </div>
+
+        <!-- 左下区域 -->
+        <div class="area bottom-left">
+            <div class="quick-info">
+                <h3>📋 游戏信息</h3>
+                <div class="info-item">经验值: <span id="exp">0/30</span></div>
+                <div class="info-item">下一敌人: <span id="next-enemy">???</span></div>
+                <div class="info-item">当前位置: <span id="current-loc">村庄</span></div>
+            </div>
+        </div>
+
+        <!-- 右上区域 -->
+        <div class="area top-right">
+            <div class="log">
+                <h3>📜 游戏日志</h3>
+                <div id="log-content">
+                    <div class="log-item">游戏开始！你站在地牢入口。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右中上区域 -->
+        <div class="area top-right-middle">
+            <div class="enemy-info">
+                <h3>👹 敌人信息</h3>
+                <div class="enemy-name" id="enemy-name">无</div>
+                <div class="enemy-hp" id="enemy-hp">生命: -/-</div>
+                <div class="enemy-attack" id="enemy-attack">攻击: -</div>
+                <div class="enemy-emoji" id="enemy-emoji">❓</div>
+            </div>
+        </div>
+
+        <!-- 右中下区域 -->
+        <div class="area bottom-right-middle">
+            <div class="player-info">
+                <h3>😎 玩家状态</h3>
+                <div class="player-level">等级: <span id="player-level">1</span></div>
+                <div class="player-hp-bar">
+                    <div class="hp-bar-bg">
+                        <div class="hp-bar-fill" id="hp-bar-fill"></div>
+                    </div>
+                    <span id="hp-text">100/100</span>
+                </div>
+                <div class="player-attack">攻击力: <span id="player-attack">10</span></div>
+                <div class="player-emoji" id="player-emoji">😎</div>
+            </div>
+        </div>
+
+        <!-- 右下区域 -->
+        <div class="area bottom-right">
+            <div class="controls">
+                <h3>🎮 游戏控制</h3>
+                <button class="control-btn" onclick="quickSave()">💾 快速保存</button>
+                <button class="control-btn" onclick="quickLoad()">📂 快速读取</button>
+                <button class="control-btn" onclick="resetGame()">🔄 重置游戏</button>
+                <button class="control-btn" onclick="toggleMusic()">🎵 音效: 开</button>
+            </div>
+        </div>
+
+        <!-- 标题区域 -->
+        <div class="title-area">
+            <h1>😎 Emoji文字RPG 🐉</h1>
         </div>
     </div>
 
