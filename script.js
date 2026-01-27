@@ -69,9 +69,10 @@ function updateAllDisplays() {
     updateStats();
     updatePlayerDisplay();
     updateEnemyDisplay();
+    updateBars(); // 更新血条
+
     updateLocationDisplay();
     updateExpDisplay();
-    updateHpBar();
 }
 
 // 更新状态显示
@@ -94,18 +95,18 @@ function updatePlayerDisplay() {
 // 更新敌人显示
 function updateEnemyDisplay() {
     const enemyNameEl = document.getElementById('enemy-name');
-    const enemyHpEl = document.getElementById('enemy-hp');
+    // const enemyHpEl = document.getElementById('enemy-hp');
     const enemyAttackEl = document.getElementById('enemy-attack');
     const enemyEmojiEl = document.getElementById('enemy-emoji');
 
     if (gameState.enemy) {
         enemyNameEl.textContent = gameState.enemy.name;
-        enemyHpEl.textContent = `生命: ${gameState.enemy.hp}/${gameState.enemy.maxHp}`;
+        // enemyHpEl.textContent = `生命: ${gameState.enemy.hp}/${gameState.enemy.maxHp}`;
         enemyAttackEl.textContent = `攻击: ${gameState.enemy.attack}`;
         enemyEmojiEl.textContent = gameState.enemy.emoji;
     } else {
         enemyNameEl.textContent = "无";
-        enemyHpEl.textContent = "生命: -/-";
+        // enemyHpEl.textContent = "生命: -/-";
         enemyAttackEl.textContent = "攻击: -";
         enemyEmojiEl.textContent = "❓";
     }
@@ -122,13 +123,42 @@ function updateExpDisplay() {
 }
 
 // 更新血条
-function updateHpBar() {
+function updateBars() {
+    // 更新玩家血条
     const hpPercent = (gameState.hp / gameState.maxHp) * 100;
-    hpBarFillEl.style.width = `${hpPercent}%`;
-    hpTextEl.textContent = `${gameState.hp}/${gameState.maxHp}`;
+
+    if (hpBarFillEl) { // if判断是为了避免报错，因为hpBarFillEl可能还没有初始化
+        hpBarFillEl.style.width = `${hpPercent}%`;
+    }
+    if (hpTextEl) {
+        hpTextEl.textContent = `${gameState.hp}/${gameState.maxHp}`;
+    }
+
+
+    // 更新敌人血条
+    const enemyHpBarFillEl = document.getElementById('enemy-hp-bar-fill');
+    const enemyHpTextEl = document.getElementById('enemy-hp-text');
+
+    if (gameState.enemy && enemyHpBarFillEl && enemyHpTextEl) {
+        const enemyHpPercent = (gameState.enemy.hp / gameState.enemy.maxHp) * 100;
+        enemyHpBarFillEl.style.width = `${enemyHpPercent}%`;
+        enemyHpTextEl.textContent = `${gameState.enemy.hp}/${gameState.enemy.maxHp}`;
+
+        // 根据血量改变血条颜色
+        if (hpPercent > 70) {
+            enemyHpBarFillEl.style.background = 'linear-gradient(to right, #ff0000, #ff5555)';
+        } else if (hpPercent > 30) {
+            enemyHpBarFillEl.style.background = 'linear-gradient(to right, #ff4400, #ff8844)';
+        } else {
+            enemyHpBarFillEl.style.background = 'linear-gradient(to right, #880000, #cc4444)';
+        }
+    } else if (enemyHpBarFillEl && enemyHpTextEl) {
+        enemyHpBarFillEl.style.width = '0%';
+        enemyHpTextEl.textContent = '-/-';
+    }
 }
 
-// 添加日志
+
 // 添加日志（支持HTML）
 function addLog(html) {
     const logItem = document.createElement('div');
@@ -206,7 +236,7 @@ function handleAction(action) {
             attackEnemy();
             break;
         case 'flee':
-            if (Math.random() > 0.3) {
+            if (Math.random() > 0.5) {
                 addLog("你成功逃跑了！");
                 gameState.location = 'dungeon';
             } else {
@@ -235,11 +265,12 @@ function exploreDungeon() {
     } else {
         const goldFound = Math.floor(Math.random() * 30) + 10;
         gameState.gold += goldFound;
-        addLog(`你找到了 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${goldFound}</span> 枚金币！`);
+        addLog(`探索一会地牢后，你找到了 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${goldFound}</span> 枚金币！`);
         gameTextEl.textContent = `你探索地牢，找到了 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${goldFound}</span> 枚金币！`;
         emojiDisplayEl.textContent = "💰";
     }
-    updateNextEnemyPrediction();
+    // updateNextEnemyPrediction();
+    updateDisplay();
 }
 
 // 攻击敌人
@@ -249,6 +280,17 @@ function attackEnemy() {
     const playerDamage = Math.floor(Math.random() * 10) + gameState.attack;
     gameState.enemy.hp -= playerDamage;
     addLog(`你对${gameState.enemy.name}造成了 <span style='color: hsla(195, 100%, 50%, 0.93); font-weight: bold;'>${playerDamage}</span> 点伤害！`);
+
+
+    // 更新血条
+    updateBars();
+
+    // 增加血条抖动效果
+    const enemyHpBarFillEl = document.getElementById('enemy-hp-bar-fill');
+    enemyHpBarFillEl.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        enemyHpBarFillEl.style.transform = 'scale(1)';
+    }, 100);
 
     if (gameState.enemy.hp <= 0) {
         addLog(`你击败了${gameState.enemy.name}！获得 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${gameState.enemy.exp}</span> 经验值和 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${gameState.enemy.gold}</span> 金币！`);
@@ -262,6 +304,7 @@ function attackEnemy() {
 
         gameState.enemy = null;
         gameState.location = 'dungeon';
+        updateDisplay(); // 更新地图显示
     } else {
         enemyAttack();
     }
@@ -276,6 +319,9 @@ function enemyAttack() {
     const enemyDamage = Math.floor(Math.random() * 10) + gameState.enemy.attack;
     gameState.hp -= enemyDamage;
     addLog(`${gameState.enemy.name}对你造成了 <span style='color: hsl(10, 100%, 50%); font-weight: bold;'>${enemyDamage}</span> 点伤害！`);
+
+    // 更新血条
+    updateBars();
 
     if (gameState.hp <= 0) {
         gameState.hp = 0;
@@ -296,6 +342,7 @@ function enemyAttack() {
         gameTextEl.textContent = `${gameState.enemy.name} (HP: ${gameState.enemy.hp})`;
     }
 
+    updateDisplay();
     updateAllDisplays();
 }
 
@@ -311,14 +358,14 @@ function levelUp() {
     addLog(`恭喜！你升到了${gameState.level}级！`);
     addLog(`生命值+ <span style='color: #00ff00; font-weight: bold;'>20</span> ，攻击力+ <span style='color: #00ff00; font-weight: bold;'>5</span> ！`);
 
-    updateNextEnemyPrediction();
+    // updateNextEnemyPrediction();
 }
 
 // 更新下一个敌人预测
-function updateNextEnemyPrediction() {
-    const nextEnemyIndex = Math.min(gameState.level, enemies.length - 1);
-    document.getElementById('next-enemy').textContent = enemies[nextEnemyIndex].name;
-}
+// function updateNextEnemyPrediction() {
+//     const nextEnemyIndex = Math.min(gameState.level, enemies.length - 1);
+//     document.getElementById('next-enemy').textContent = enemies[nextEnemyIndex].name;
+// }
 
 // === 存档系统 ===
 
@@ -411,7 +458,7 @@ function resetGame() {
 
 // 初始化游戏
 function initGame() {
-    updateNextEnemyPrediction();
+    // updateNextEnemyPrediction();
     updateDisplay();
     addLog("游戏开始！");
 }

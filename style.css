@@ -215,6 +215,66 @@ h3 {
     margin: 5px 0;
 }
 
+
+/* 敌人血条  添加敌人血条样式： */
+.enemy-hp-bar {
+    width: 100%;
+    margin: 5px 0;
+}
+
+.enemy-hp-bar-bg {
+    width: 100%;
+    height: 15px;
+    background: rgba(40, 0, 0, 0.7);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 3px;
+    border: 1px solid #ff0000;
+}
+
+.enemy-hp-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, #ff0000, #ff5555);
+    border-radius: 8px;
+    width: 100%;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 血条动态效果 */
+.enemy-hp-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 100%);
+    animation: bloodFlow 1.5s infinite linear;
+}
+
+@keyframes bloodFlow {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+#enemy-hp-text {
+    display: block;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #ff8888;
+}
+
+
 /* 玩家信息 */
 .player-info {
     height: 100%;
