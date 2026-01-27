@@ -9,11 +9,10 @@ const gameState = {
     attack: 10,
     location: 'town',
     enemy: null,
-    gameActive: true,
-    musicOn: true
+    gameActive: true
 };
 
-// 游戏内容
+// 游戏内容（只保留locations）
 const gameContent = {
     locations: {
         town: {
@@ -23,8 +22,7 @@ const gameContent = {
             actions: [
                 { text: "前往地牢 🏰", action: "goDungeon", emoji: "🏰" },
                 { text: "前往商店 🛒", action: "goShop", emoji: "🛒" },
-                { text: "休息恢复 ❤️", action: "rest", emoji: "❤️" },
-                { text: "训练攻击力 🏋️", action: "train", emoji: "🏋️" }
+                { text: "休息恢复 ❤️", action: "rest", emoji: "❤️" }
             ]
         },
         dungeon: {
@@ -33,7 +31,6 @@ const gameContent = {
             description: "你在地牢入口。黑暗的通道深处传来奇怪的声音...",
             actions: [
                 { text: "探索地牢 👣", action: "explore", emoji: "👣" },
-                { text: "深度探索 🔍", action: "deepExplore", emoji: "🔍" },
                 { text: "返回村庄 🏘️", action: "goTown", emoji: "🏘️" }
             ]
         },
@@ -44,7 +41,6 @@ const gameContent = {
             actions: [
                 { text: "购买药水 (+50HP) 💊", action: "buyPotion", cost: 20, emoji: "💊" },
                 { text: "购买宝剑 (+5攻击) ⚔️", action: "buySword", cost: 50, emoji: "⚔️" },
-                { text: "购买护甲 (+30HP) 🛡️", action: "buyArmor", cost: 40, emoji: "🛡️" },
                 { text: "离开商店 🏘️", action: "goTown", emoji: "🏘️" }
             ]
         },
@@ -54,20 +50,10 @@ const gameContent = {
             description: "你遇到了敌人！",
             actions: [
                 { text: "攻击 ⚔️", action: "attack", emoji: "⚔️" },
-                { text: "强力攻击 💥", action: "strongAttack", emoji: "💥" },
-                { text: "防御 🛡️", action: "defend", emoji: "🛡️" },
                 { text: "逃跑 🏃", action: "flee", emoji: "🏃" }
             ]
         }
-    },
-
-    enemies: [
-        { name: "史莱姆 🫧", emoji: "🫧", hp: 30, maxHp: 30, attack: 5, exp: 15, gold: 5 },
-        { name: "骷髅 💀", emoji: "💀", hp: 50, maxHp: 50, attack: 8, exp: 25, gold: 10 },
-        { name: "哥布林 👹", emoji: "👹", hp: 70, maxHp: 70, attack: 12, exp: 40, gold: 20 },
-        { name: "巫师 🧙", emoji: "🧙", hp: 100, maxHp: 100, attack: 15, exp: 60, gold: 30 },
-        { name: "龙 🐉", emoji: "🐉", hp: 150, maxHp: 150, attack: 20, exp: 100, gold: 50 }
-    ]
+    }
 };
 
 // DOM元素
@@ -100,16 +86,9 @@ function updateStats() {
 function updatePlayerDisplay() {
     document.getElementById('player-level').textContent = gameState.level;
     document.getElementById('player-attack').textContent = gameState.attack;
-
-    // 根据生命值改变玩家表情
     const playerEmojiEl = document.getElementById('player-emoji');
-    if (gameState.hp > gameState.maxHp * 0.7) {
-        playerEmojiEl.textContent = '😎';
-    } else if (gameState.hp > gameState.maxHp * 0.3) {
-        playerEmojiEl.textContent = '😐';
-    } else {
-        playerEmojiEl.textContent = '😨';
-    }
+    if (gameState.hp > gameState.maxHp * 0.5) playerEmojiEl.textContent = '😎';
+    else playerEmojiEl.textContent = '😨';
 }
 
 // 更新敌人显示
@@ -118,7 +97,7 @@ function updateEnemyDisplay() {
     const enemyHpEl = document.getElementById('enemy-hp');
     const enemyAttackEl = document.getElementById('enemy-attack');
     const enemyEmojiEl = document.getElementById('enemy-emoji');
-
+    
     if (gameState.enemy) {
         enemyNameEl.textContent = gameState.enemy.name;
         enemyHpEl.textContent = `生命: ${gameState.enemy.hp}/${gameState.enemy.maxHp}`;
@@ -134,8 +113,7 @@ function updateEnemyDisplay() {
 
 // 更新位置显示
 function updateLocationDisplay() {
-    const location = gameContent.locations[gameState.location];
-    document.getElementById('current-loc').textContent = location.name;
+    document.getElementById('current-loc').textContent = gameContent.locations[gameState.location].name;
 }
 
 // 更新经验显示
@@ -148,15 +126,6 @@ function updateHpBar() {
     const hpPercent = (gameState.hp / gameState.maxHp) * 100;
     hpBarFillEl.style.width = `${hpPercent}%`;
     hpTextEl.textContent = `${gameState.hp}/${gameState.maxHp}`;
-
-    // 根据血量改变血条颜色
-    if (hpPercent > 70) {
-        hpBarFillEl.style.background = 'linear-gradient(to right, #00ff00, #55ff55)';
-    } else if (hpPercent > 30) {
-        hpBarFillEl.style.background = 'linear-gradient(to right, #ffff00, #ffff55)';
-    } else {
-        hpBarFillEl.style.background = 'linear-gradient(to right, #ff0000, #ff5555)';
-    }
 }
 
 // 添加日志
@@ -173,125 +142,69 @@ function updateDisplay() {
     const location = gameContent.locations[gameState.location];
     gameTextEl.textContent = location.description;
     emojiDisplayEl.textContent = location.emoji;
-
-    // 清空行动按钮
+    
     actionsEl.innerHTML = '';
-
-    // 创建行动按钮
+    
     location.actions.forEach(action => {
         const button = document.createElement('button');
         button.className = 'action-btn';
         button.textContent = action.text;
         button.onclick = () => handleAction(action);
-
-        // 检查是否有足够金币
+        
         if (action.cost && gameState.gold < action.cost) {
             button.disabled = true;
-            button.title = `需要 ${action.cost} 金币`;
         }
-
+        
         actionsEl.appendChild(button);
     });
-
+    
     updateAllDisplays();
 }
 
 // 处理行动
 function handleAction(action) {
     if (!gameState.gameActive) return;
-
-    switch (action.action) {
+    
+    switch(action.action) {
         case 'goDungeon':
             gameState.location = 'dungeon';
             addLog("你前往地牢。");
             break;
-
         case 'goTown':
             gameState.location = 'town';
             addLog("你返回村庄。");
             break;
-
         case 'goShop':
             gameState.location = 'shop';
             addLog("你进入商店。");
             break;
-
         case 'rest':
-            const heal = 30;
-            gameState.hp = Math.min(gameState.maxHp, gameState.hp + heal);
-            addLog(`你休息恢复了${heal}点生命。`);
+            gameState.hp = Math.min(gameState.maxHp, gameState.hp + 30);
+            addLog(`你休息恢复了30点生命。`);
             break;
-
-        case 'train':
-            if (gameState.gold >= 15) {
-                gameState.gold -= 15;
-                gameState.attack += 2;
-                addLog("你训练了攻击力，攻击+2！");
-            } else {
-                addLog("金币不足，无法训练！");
-            }
-            break;
-
         case 'explore':
-            exploreDungeon(false);
+            exploreDungeon();
             break;
-
-        case 'deepExplore':
-            exploreDungeon(true);
-            break;
-
         case 'buyPotion':
-            if (gameState.gold >= action.cost) {
-                gameState.gold -= action.cost;
+            if (gameState.gold >= 20) {
+                gameState.gold -= 20;
                 gameState.maxHp += 50;
                 gameState.hp += 50;
                 addLog("你购买了药水，最大生命值增加了！");
-            } else {
-                addLog("金币不足！");
             }
             break;
-
         case 'buySword':
-            if (gameState.gold >= action.cost) {
-                gameState.gold -= action.cost;
+            if (gameState.gold >= 50) {
+                gameState.gold -= 50;
                 gameState.attack += 5;
                 addLog("你购买了宝剑，攻击力增加了！");
-            } else {
-                addLog("金币不足！");
             }
             break;
-
-        case 'buyArmor':
-            if (gameState.gold >= action.cost) {
-                gameState.gold -= action.cost;
-                gameState.maxHp += 30;
-                gameState.hp += 30;
-                addLog("你购买了护甲，最大生命值增加了！");
-            } else {
-                addLog("金币不足！");
-            }
-            break;
-
         case 'attack':
-            attackEnemy(false);
+            attackEnemy();
             break;
-
-        case 'strongAttack':
-            attackEnemy(true);
-            break;
-
-        case 'defend':
-            addLog("你采取了防御姿态！");
-            // 防御效果：减少下一次受到的伤害
-            setTimeout(() => {
-                addLog("防御效果消失。");
-            }, 2000);
-            enemyAttack(0.5); // 减少50%伤害
-            break;
-
         case 'flee':
-            const fleeChance = Math.random();
-            if (fleeChance > 0.3) {
+            if (Math.random() > 0.3) {
                 addLog("你成功逃跑了！");
                 gameState.location = 'dungeon';
             } else {
@@ -300,103 +213,69 @@ function handleAction(action) {
             }
             break;
     }
-
+    
     updateDisplay();
 }
 
 // 探索地牢
-function exploreDungeon(deep = false) {
-    const encounterChance = deep ? 0.9 : 0.7;
-
-    if (Math.random() < encounterChance) {
-        // 遇到敌人
-        let enemyIndex;
-        if (deep) {
-            enemyIndex = Math.min(
-                Math.floor(Math.random() * (gameState.level + 3)),
-                gameContent.enemies.length - 1
-            );
-        } else {
-            enemyIndex = Math.min(
-                Math.floor(Math.random() * (gameState.level + 2)),
-                gameContent.enemies.length - 1
-            );
-        }
-
-        gameState.enemy = { ...gameContent.enemies[enemyIndex] };
-        gameState.enemy.hp = gameState.enemy.maxHp; // 重置敌人血量
-
+function exploreDungeon() {
+    if (Math.random() < 0.7) {
+        const enemyIndex = Math.min(
+            Math.floor(Math.random() * (gameState.level + 2)), 
+            enemies.length - 1
+        );
+        gameState.enemy = {...enemies[enemyIndex]};
+        
         gameState.location = 'battle';
-        const action = deep ? "深度探索" : "探索";
-        addLog(`${action}时遭遇了${gameState.enemy.name}！`);
+        addLog(`遭遇了${gameState.enemy.name}！`);
         gameTextEl.textContent = `你遇到了${gameState.enemy.name}！`;
         emojiDisplayEl.textContent = gameState.enemy.emoji;
     } else {
-        // 找到宝藏
-        const goldMin = deep ? 20 : 10;
-        const goldMax = deep ? 50 : 30;
-        const goldFound = Math.floor(Math.random() * (goldMax - goldMin + 1)) + goldMin;
+        const goldFound = Math.floor(Math.random() * 30) + 10;
         gameState.gold += goldFound;
-
-        const action = deep ? "深度探索" : "探索";
-        addLog(`${action}地牢，找到了${goldFound}枚金币！`);
-        gameTextEl.textContent = `你${action}地牢，找到了${goldFound}枚金币！`;
+        addLog(`你找到了${goldFound}枚金币！`);
+        gameTextEl.textContent = `你探索地牢，找到了${goldFound}枚金币！`;
         emojiDisplayEl.textContent = "💰";
     }
-
-    // 更新下一个敌人预测
     updateNextEnemyPrediction();
 }
 
 // 攻击敌人
-function attackEnemy(strong = false) {
+function attackEnemy() {
     if (!gameState.enemy) return;
-
-    // 玩家攻击
-    let playerDamage;
-    if (strong) {
-        playerDamage = Math.floor(Math.random() * 15) + gameState.attack + 5;
-        addLog("你使用了强力攻击！");
-    } else {
-        playerDamage = Math.floor(Math.random() * 10) + gameState.attack;
-    }
-
+    
+    const playerDamage = Math.floor(Math.random() * 10) + gameState.attack;
     gameState.enemy.hp -= playerDamage;
     addLog(`你对${gameState.enemy.name}造成了${playerDamage}点伤害！`);
-
-    // 检查敌人是否被击败
+    
     if (gameState.enemy.hp <= 0) {
         addLog(`你击败了${gameState.enemy.name}！`);
         addLog(`获得${gameState.enemy.exp}经验值和${gameState.enemy.gold}金币！`);
-
+        
         gameState.gold += gameState.enemy.gold;
         gameState.exp += gameState.enemy.exp;
-
-        // 检查是否升级
+        
         if (gameState.exp >= gameState.expToNextLevel) {
             levelUp();
         }
-
-        // 返回地牢
+        
         gameState.enemy = null;
         gameState.location = 'dungeon';
     } else {
-        // 敌人反击
         enemyAttack();
     }
-
+    
     updateAllDisplays();
 }
 
 // 敌人攻击
-function enemyAttack(defenseMultiplier = 1) {
+function enemyAttack() {
     if (!gameState.enemy) return;
-
-    const enemyDamage = Math.floor(Math.random() * 10 + gameState.enemy.attack) * defenseMultiplier;
-    gameState.hp -= Math.max(1, Math.floor(enemyDamage));
-    addLog(`${gameState.enemy.name}对你造成了${Math.floor(enemyDamage)}点伤害！`);
-
-    // 检查玩家是否死亡
+    
+    const enemyDamage = Math.floor(Math.random() * 10) + gameState.enemy.attack;
+    gameState.hp -= enemyDamage;
+    addLog(`${gameState.enemy.name}对你造成了${enemyDamage}点伤害！`);
+    
     if (gameState.hp <= 0) {
         gameState.hp = 0;
         addLog("你被击败了！游戏结束。");
@@ -405,10 +284,9 @@ function enemyAttack(defenseMultiplier = 1) {
         emojiDisplayEl.textContent = "💀";
         actionsEl.innerHTML = '<button class="action-btn" onclick="resetGame()">重新开始 🔄</button>';
     }
-
-    // 更新敌人状态显示
+    
     gameTextEl.textContent = `${gameState.enemy.name} (HP: ${gameState.enemy.hp})`;
-
+    
     updateAllDisplays();
 }
 
@@ -420,19 +298,17 @@ function levelUp() {
     gameState.maxHp += 20;
     gameState.hp = gameState.maxHp;
     gameState.attack += 5;
-
+    
     addLog(`恭喜！你升到了${gameState.level}级！`);
     addLog(`生命值+20，攻击力+5！`);
-
-    // 更新下一个敌人预测
+    
     updateNextEnemyPrediction();
 }
 
 // 更新下一个敌人预测
 function updateNextEnemyPrediction() {
-    const nextEnemyIndex = Math.min(gameState.level, gameContent.enemies.length - 1);
-    const nextEnemy = gameContent.enemies[nextEnemyIndex];
-    document.getElementById('next-enemy').textContent = nextEnemy.name;
+    const nextEnemyIndex = Math.min(gameState.level, enemies.length - 1);
+    document.getElementById('next-enemy').textContent = enemies[nextEnemyIndex].name;
 }
 
 // 控制函数
@@ -454,7 +330,7 @@ function quickLoad() {
 }
 
 function resetGame() {
-    if (confirm("确定要重置游戏吗？所有进度将丢失！")) {
+    if (confirm("确定要重置游戏吗？")) {
         Object.assign(gameState, {
             hp: 100,
             maxHp: 100,
@@ -465,28 +341,20 @@ function resetGame() {
             attack: 10,
             location: 'town',
             enemy: null,
-            gameActive: true,
-            musicOn: true
+            gameActive: true
         });
-
+        
         addLog("游戏已重置！");
         updateAllDisplays();
         updateDisplay();
     }
 }
 
-function toggleMusic() {
-    gameState.musicOn = !gameState.musicOn;
-    const musicBtn = document.querySelector('.control-btn[onclick="toggleMusic()"]');
-    musicBtn.textContent = `🎵 音效: ${gameState.musicOn ? '开' : '关'}`;
-    addLog(`音效${gameState.musicOn ? '开启' : '关闭'}`);
-}
-
 // 初始化游戏
 function initGame() {
     updateNextEnemyPrediction();
     updateDisplay();
-    addLog("游戏开始！点击按钮开始冒险。");
+    addLog("游戏开始！");
 }
 
 // 启动游戏
