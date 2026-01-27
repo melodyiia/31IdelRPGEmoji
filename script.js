@@ -129,10 +129,11 @@ function updateHpBar() {
 }
 
 // 添加日志
-function addLog(text) {
+// 添加日志（支持HTML）
+function addLog(html) {
     const logItem = document.createElement('div');
     logItem.className = 'log-item';
-    logItem.textContent = `> ${text}`;
+    logItem.innerHTML = `> ${html}`;
     logContentEl.appendChild(logItem);
     logContentEl.scrollTop = logContentEl.scrollHeight;
 }
@@ -180,7 +181,7 @@ function handleAction(action) {
             break;
         case 'rest':
             gameState.hp = Math.min(gameState.maxHp, gameState.hp + 30);
-            addLog(`你休息恢复了30点生命。`);
+            addLog(`你休息恢复了 <span style='color: #00ff00; font-weight: bold;'>30</span> 点生命。`);
             break;
         case 'explore':
             exploreDungeon();
@@ -190,14 +191,15 @@ function handleAction(action) {
                 gameState.gold -= 20;
                 gameState.maxHp += 50;
                 gameState.hp += 50;
-                addLog("你购买了药水，最大生命值增加了！");
+                // addLog("你购买了药水，最大生命值增加了 50！");
+                addLog("你购买了药水，最大生命值增加了 <span style='color: #00ff00; font-weight: bold;'>50</span>！");
             }
             break;
         case 'buySword':
             if (gameState.gold >= 50) {
                 gameState.gold -= 50;
                 gameState.attack += 5;
-                addLog("你购买了宝剑，攻击力增加了！");
+                addLog("你购买了宝剑，攻击力增加了 <span style='color: #00ff00; font-weight: bold;'>5</span>！");
             }
             break;
         case 'attack':
@@ -233,8 +235,8 @@ function exploreDungeon() {
     } else {
         const goldFound = Math.floor(Math.random() * 30) + 10;
         gameState.gold += goldFound;
-        addLog(`你找到了${goldFound}枚金币！`);
-        gameTextEl.textContent = `你探索地牢，找到了${goldFound}枚金币！`;
+        addLog(`你找到了 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${goldFound}</span> 枚金币！`);
+        gameTextEl.textContent = `你探索地牢，找到了 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${goldFound}</span> 枚金币！`;
         emojiDisplayEl.textContent = "💰";
     }
     updateNextEnemyPrediction();
@@ -246,11 +248,10 @@ function attackEnemy() {
 
     const playerDamage = Math.floor(Math.random() * 10) + gameState.attack;
     gameState.enemy.hp -= playerDamage;
-    addLog(`你对${gameState.enemy.name}造成了${playerDamage}点伤害！`);
+    addLog(`你对${gameState.enemy.name}造成了 <span style='color: hsla(195, 100%, 50%, 0.93); font-weight: bold;'>${playerDamage}</span> 点伤害！`);
 
     if (gameState.enemy.hp <= 0) {
-        addLog(`你击败了${gameState.enemy.name}！`);
-        addLog(`获得${gameState.enemy.exp}经验值和${gameState.enemy.gold}金币！`);
+        addLog(`你击败了${gameState.enemy.name}！获得 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${gameState.enemy.exp}</span> 经验值和 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${gameState.enemy.gold}</span> 金币！`);
 
         gameState.gold += gameState.enemy.gold;
         gameState.exp += gameState.enemy.exp;
@@ -274,15 +275,14 @@ function enemyAttack() {
 
     const enemyDamage = Math.floor(Math.random() * 10) + gameState.enemy.attack;
     gameState.hp -= enemyDamage;
-    addLog(`${gameState.enemy.name}对你造成了${enemyDamage}点伤害！`);
+    addLog(`${gameState.enemy.name}对你造成了 <span style='color: hsl(10, 100%, 50%); font-weight: bold;'>${enemyDamage}</span> 点伤害！`);
 
     if (gameState.hp <= 0) {
         gameState.hp = 0;
-        addLog("你被击败了！");
 
         const lostGold = Math.floor(gameState.gold / 2);
         gameState.gold = Math.max(1, gameState.gold - lostGold);
-        addLog(`你失去了${lostGold}枚金币！`);
+        addLog(`你被击败了！你失去了 <span style='color: rgb(251, 255, 0); font-weight: bold;'>${lostGold}</span> 枚金币！`);
 
         gameState.hp = gameState.maxHp;
         addLog("你在村庄满血复活了！");
@@ -290,7 +290,7 @@ function enemyAttack() {
         gameState.location = 'town';
         gameState.enemy = null;
 
-        gameTextEl.textContent = "你被击败后回到了村庄，金币损失了一半。";
+        gameTextEl.textContent = "你被击败后回到了村庄，金币至少损失了一半。";
         emojiDisplayEl.textContent = "🏘️";
     } else {
         gameTextEl.textContent = `${gameState.enemy.name} (HP: ${gameState.enemy.hp})`;
@@ -309,7 +309,7 @@ function levelUp() {
     gameState.attack += 5;
 
     addLog(`恭喜！你升到了${gameState.level}级！`);
-    addLog(`生命值+20，攻击力+5！`);
+    addLog(`生命值+ <span style='color: #00ff00; font-weight: bold;'>20</span> ，攻击力+ <span style='color: #00ff00; font-weight: bold;'>5</span> ！`);
 
     updateNextEnemyPrediction();
 }
