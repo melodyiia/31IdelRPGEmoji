@@ -86,14 +86,18 @@ function toggleMusic() {
     document.getElementById("music-toggle").textContent = isMusicPlaying ? "🎵 关闭音乐" : "🎵 播放音乐";
 }
 
+// 在 adjustVolume 函数中添加   8.2-音量百分比可视化
+function adjustVolume(change) {
+    if (isMusicPlaying) {
+        volume = Math.max(0, Math.min(1, volume + change));
+        music.volume = volume;
+        // 更新血条宽度
+        btn.style.setProperty('--volume', `${volume * 100}%`);
+    }
+}
 /* 鼠标事件处理  
 onmouseover	当指针移动到一个元素或它的一个子元素上时发生该事件	
-onmouseout	当用户将鼠标指针移出元素或其子元素之一时发生该事件
-*/
-function adjustVolume(change) {
-    volume = Math.max(0, Math.min(1, volume + change));
-    music.volume = volume;
-}
+onmouseout	当用户将鼠标指针移出元素或其子元素之一时发生该事件  */
 // 鼠标移出按钮时取消发光
 btn.addEventListener("mouseleave", function () {
     this.classList.remove("glow");

@@ -387,18 +387,40 @@ h3 {
 }
 
 
-/* 8.1点击 播放音乐 按钮后，悬停鼠标在按钮上时按钮发光高亮显示，长按鼠标左键往左降低音量，往右提高音量 */
+/* 8.1点击 播放音乐 按钮 */
+/* 8.2-音量百分比可视化 */
 #music-btn {
     display: flex;
     padding: 0;
+    background: rgba(128, 64, 0, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* js在 adjustVolume 函数中添加setProperty('--volume', `${volume * 100}%`);后，修改 CSS 中的伪元素宽度 
+width: 30%; //初始音量30%  ->   width: var(--volume, 30%);  */
+#music-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #a05000;
+    width: var(--volume, 30%);
+    z-index: 0;
+    transition: width 0.3s;
 }
 
 .music-part {
     flex: 1;
     padding: 8px 0;
     cursor: pointer;
-    border-right: 1px solid #a05000;
+    border-right: 1px solid rgba(160, 80, 0, 0.5);
+    position: relative;
+    z-index: 1;
 }
+
+
 
 .music-part:last-child {
     border-right: none;
