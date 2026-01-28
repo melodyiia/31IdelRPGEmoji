@@ -78,7 +78,7 @@ function toggleMusic() {
         btn.classList.remove("glow");
     } else {
         if (volume === 0) {
-            volume += 0.1;
+            volume += 0.3;
             btn.style.setProperty('--volume', `${volume * 100}%`); // 更新血条宽度
         }
         music.loop = true;
@@ -87,7 +87,7 @@ function toggleMusic() {
         btn.classList.add("glow");
     }
     isMusicPlaying = !isMusicPlaying;
-    document.getElementById("music-toggle").textContent = isMusicPlaying ? "🎵 关闭音乐" : "🎵 播放音乐";
+    document.getElementById("music-toggle").textContent = isMusicPlaying ? "🎵 音乐(已播放)" : "🎵 音乐(已关闭)";
 }
 
 // 在 adjustVolume 函数中添加   8.2-音量百分比可视化
@@ -95,21 +95,23 @@ function adjustVolume(change) {
     if (change > 0 && !isMusicPlaying) { // 如果是提高音量且音乐没播放，先播放音乐
         toggleMusic();
     }
+    volume = Math.max(0, Math.min(1, volume + change)); // 调整音量
+
+    if (volume === 0 && isMusicPlaying) {
+        music.pause();
+        isMusicPlaying = false;
+        btn.classList.remove("glow");
+        btn.style.setProperty('--volume', `${volume * 100}%`);
+        document.getElementById("music-toggle").textContent = "🎵 音乐(已关闭)";
+    } else if (isMusicPlaying) {
+        music.volume = volume;
+        btn.style.setProperty('--volume', `${volume * 100}%`);
+    }
 
     if (change < 0 && !isMusicPlaying) {// 如果是降低音量且音乐没播放
-        if (volume === 0) {
-            btn.classList.remove("glow");
-        }
         toggleMusic();
+        btn.style.setProperty('--volume', `${volume * 100}%`);
     }
-
-    volume = Math.max(0, Math.min(1, volume + change)); // 调整音量
-    if (isMusicPlaying) {
-        music.volume = volume;
-        btn.style.setProperty('--volume', `${volume * 100}%`); // 更新血条宽度
-    }
-
-
 }
 /* 鼠标事件处理  
 onmouseover	当指针移动到一个元素或它的一个子元素上时发生该事件	
