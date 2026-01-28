@@ -126,6 +126,29 @@ btn.addEventListener("mouseenter", function () {
 });
 
 
+// 在敌人信息区域添加鼠标事件
+const enemyInfo = document.querySelector('.enemy-info');
+const tooltip = document.getElementById('enemy-tooltip');
+
+enemyInfo.addEventListener('mousemove', function (e) {
+    if (gameState.enemy) {
+        tooltip.innerHTML = `
+            <div>生命: ${gameState.enemy.hp}/${gameState.enemy.maxHp}</div>
+            <div>攻击: ${gameState.enemy.attack}</div>
+            <div>经验: ${gameState.enemy.exp}</div>
+            <div>金币: ${gameState.enemy.gold}</div>
+        `;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 10) + 'px';
+        tooltip.style.top = (e.clientY + 10) + 'px';
+    }
+});
+
+enemyInfo.addEventListener('mouseleave', function () {
+    tooltip.style.display = 'none';
+});
+
+
 // 更新所有显示
 function updateAllDisplays() {
     updateStats();

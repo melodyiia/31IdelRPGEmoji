@@ -196,6 +196,21 @@ h3 {
     text-align: center;
 }
 
+
+/* 8.5-鼠标悬停在敌人信息区域时，鼠标周围位置出现一个文本框，说明敌人的各种信息 */
+#enemy-tooltip {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.9);
+    /* 改为淡白色 */
+    color: #000;
+    /* 文字改为黑色 */
+    padding: 5px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+}
+
+
 .enemy-name {
     font-size: 1.1rem;
     color: #ff8888;
