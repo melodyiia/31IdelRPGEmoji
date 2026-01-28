@@ -77,6 +77,10 @@ function toggleMusic() {
         music.pause();
         btn.classList.remove("glow");
     } else {
+        if (volume === 0) {
+            volume += 0.1;
+            btn.style.setProperty('--volume', `${volume * 100}%`); // 更新血条宽度
+        }
         music.loop = true;
         music.volume = volume;
         music.play();
@@ -88,12 +92,24 @@ function toggleMusic() {
 
 // 在 adjustVolume 函数中添加   8.2-音量百分比可视化
 function adjustVolume(change) {
-    if (isMusicPlaying) {
-        volume = Math.max(0, Math.min(1, volume + change));
-        music.volume = volume;
-        // 更新血条宽度
-        btn.style.setProperty('--volume', `${volume * 100}%`);
+    if (change > 0 && !isMusicPlaying) { // 如果是提高音量且音乐没播放，先播放音乐
+        toggleMusic();
     }
+
+    if (change < 0 && !isMusicPlaying) {// 如果是降低音量且音乐没播放
+        if (volume === 0) {
+            btn.classList.remove("glow");
+        }
+        toggleMusic();
+    }
+
+    volume = Math.max(0, Math.min(1, volume + change)); // 调整音量
+    if (isMusicPlaying) {
+        music.volume = volume;
+        btn.style.setProperty('--volume', `${volume * 100}%`); // 更新血条宽度
+    }
+
+
 }
 /* 鼠标事件处理  
 onmouseover	当指针移动到一个元素或它的一个子元素上时发生该事件	

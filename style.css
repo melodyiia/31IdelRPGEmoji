@@ -405,7 +405,7 @@ width: 30%; //初始音量30%  ->   width: var(--volume, 30%);  */
     top: 0;
     left: 0;
     height: 100%;
-    background: #a05000;
+    background: #a050008d;
     width: var(--volume, 30%);
     z-index: 0;
     transition: width 0.3s;
@@ -415,11 +415,11 @@ width: 30%; //初始音量30%  ->   width: var(--volume, 30%);  */
     flex: 1;
     padding: 8px 0;
     cursor: pointer;
-    border-right: 1px solid rgba(160, 80, 0, 0.5);
+    border-right: 5px solid rgb(160, 80, 0);
+    border-radius: 5px;
     position: relative;
     z-index: 1;
 }
-
 
 
 .music-part:last-child {
@@ -427,9 +427,9 @@ width: 30%; //初始音量30%  ->   width: var(--volume, 30%);  */
 }
 
 .music-part:hover {
-    background: #a05000;
+    background: #43a00093;
 }
 
 .glow {
-    box-shadow: 0 0 15px #00ffcc;
+    box-shadow: 0 0 15px #00c3ffe4;
 }
