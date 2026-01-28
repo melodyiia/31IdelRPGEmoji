@@ -64,6 +64,26 @@ const logContentEl = document.getElementById('log-content');
 const hpBarFillEl = document.getElementById('hp-bar-fill');
 const hpTextEl = document.getElementById('hp-text');
 
+
+// 在 script.js 最顶部添加
+let music = new Audio("audio/rush_point.mp3");
+let isMusicPlaying = false;
+
+// 音乐控制函数
+function toggleMusic() {
+    if (isMusicPlaying) {
+        music.pause();
+    } else {
+        music.loop = true;
+        music.volume = 0.3;
+        music.play();
+    }
+    isMusicPlaying = !isMusicPlaying;
+    document.getElementById("music-btn").textContent =
+        isMusicPlaying ? "🎵 关闭音乐" : "🎵 播放音乐";
+}
+
+
 // 更新所有显示
 function updateAllDisplays() {
     updateStats();
@@ -210,8 +230,12 @@ function handleAction(action) {
             addLog("你进入商店。");
             break;
         case 'rest':
-            gameState.hp = Math.min(gameState.maxHp, gameState.hp + 30);
-            addLog(`你休息恢复了 <span style='color: #00ff00; font-weight: bold;'>30</span> 点生命。`);
+            if (gameState.hp < gameState.maxHp) {
+                gameState.hp = Math.min(gameState.maxHp, gameState.hp + 30);
+                addLog(`你休息恢复了 <span style='color: #00ff00; font-weight: bold;'>30</span> 点生命。`);
+            } else {
+                addLog(`你已休息完毕完全恢复了，当前生命： <span style='color: #00ff00; font-weight: bold;'>${gameState.maxHp}</span> 。`);
+            }
             break;
         case 'explore':
             exploreDungeon();
