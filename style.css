@@ -385,3 +385,29 @@ h3 {
         font-size: 1.5rem;
     }
 }
+
+
+/* 8.1点击 播放音乐 按钮后，悬停鼠标在按钮上时按钮发光高亮显示，长按鼠标左键往左降低音量，往右提高音量 */
+#music-btn {
+    display: flex;
+    padding: 0;
+}
+
+.music-part {
+    flex: 1;
+    padding: 8px 0;
+    cursor: pointer;
+    border-right: 1px solid #a05000;
+}
+
+.music-part:last-child {
+    border-right: none;
+}
+
+.music-part:hover {
+    background: #a05000;
+}
+
+.glow {
+    box-shadow: 0 0 15px #00ffcc;
+}

@@ -65,23 +65,43 @@ const hpBarFillEl = document.getElementById('hp-bar-fill');
 const hpTextEl = document.getElementById('hp-text');
 
 
-// 在 script.js 最顶部添加
+// 8.1点击 播放音乐 按钮后，悬停鼠标在按钮上时按钮发光高亮显示，长按鼠标左键往左降低音量，往右提高音量  
 let music = new Audio("audio/rush_point.mp3");
 let isMusicPlaying = false;
+let volume = 0.3; // 默认音量
+const btn = document.getElementById("music-btn");
 
-// 音乐控制函数
+// 音乐控制函数         // 发光效果
 function toggleMusic() {
     if (isMusicPlaying) {
         music.pause();
+        btn.classList.remove("glow");
     } else {
         music.loop = true;
-        music.volume = 0.3;
+        music.volume = volume;
         music.play();
+        btn.classList.add("glow");
     }
     isMusicPlaying = !isMusicPlaying;
-    document.getElementById("music-btn").textContent =
-        isMusicPlaying ? "🎵 关闭音乐" : "🎵 播放音乐";
+    document.getElementById("music-toggle").textContent = isMusicPlaying ? "🎵 关闭音乐" : "🎵 播放音乐";
 }
+
+/* 鼠标事件处理  
+onmouseover	当指针移动到一个元素或它的一个子元素上时发生该事件	
+onmouseout	当用户将鼠标指针移出元素或其子元素之一时发生该事件
+*/
+function adjustVolume(change) {
+    volume = Math.max(0, Math.min(1, volume + change));
+    music.volume = volume;
+}
+// 鼠标移出按钮时取消发光
+btn.addEventListener("mouseleave", function () {
+    this.classList.remove("glow");
+});
+// 鼠标移入按钮时，如果音乐正在播放，则恢复发光
+btn.addEventListener("mouseenter", function () {
+    if (isMusicPlaying) this.classList.add("glow");
+});
 
 
 // 更新所有显示

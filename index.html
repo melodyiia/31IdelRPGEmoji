@@ -107,8 +107,11 @@
                 <button class="control-btn" onclick="quickLoad()">📂 快速读取</button>
                 <button class="control-btn" onclick="exportSave()">📤 导出存档</button>
                 <button class="control-btn" onclick="importSave()">📥 导入存档</button>
-                <!-- 在控制区域添加这个按钮 -->
-                <button class="control-btn" onclick="toggleMusic()" id="music-btn">🎵 播放音乐</button>
+                <button class="control-btn" id="music-btn">
+                    <span class="music-part" onclick="adjustVolume(-0.1)">🔈</span>
+                    <span class="music-part" id="music-toggle" onclick="toggleMusic()">🎵 播放音乐</span>
+                    <span class="music-part" onclick="adjustVolume(0.1)">🔊</span>
+                </button>
                 <button class="control-btn" onclick="resetGame()">🔄 重置游戏</button>
             </div>
         </div>
